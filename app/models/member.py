@@ -37,12 +37,18 @@ class Member:
             
         days_used = (change_date - self.start_date).days
         if days_used >= 30 or days_used < 0:
+            daily_rate = self.PLANS[self.plan]['price'] / Decimal('30')
             return {
                 'refund': Decimal('0'),
                 'new_price': self.PLANS[new_plan]['price'],
                 'days_used': days_used,
                 'days_remaining': 0,
-                'package_refund': Decimal('0')
+                'package_refund': Decimal('0'),
+                'plan_refund': Decimal('0'),
+                'daily_plan_rate': daily_rate,
+                'daily_package_rate': Decimal('0'),
+                'current_plan_price': self.PLANS[self.plan]['price'],
+                'package_price': self.PACKAGE_PRICE
             }
 
         # Výpočet vratky za nevyužité dny plánu
@@ -50,19 +56,27 @@ class Member:
         daily_rate = self.PLANS[self.plan]['price'] / Decimal('30')
         plan_refund = (daily_rate * Decimal(days_remaining))
 
-        # Package is not refunded - it continues until its original 30-day period ends
+        # Calculate package refund only when changing to Plan D and user has a package
         package_refund = Decimal('0')
+        daily_package_rate = Decimal('0')
+        if self.has_package and self.PLANS[new_plan]['includes_package']:
+            daily_package_rate = self.PACKAGE_PRICE / Decimal('30')
+            package_refund = (daily_package_rate * Decimal(days_remaining))
 
         # Base price is just the plan price
         new_price = self.PLANS[new_plan]['price']
 
         return {
-            'refund': plan_refund,  # Only plan refund, no package refund
-            'new_price': new_price,  # Just the plan price
+            'refund': plan_refund + package_refund,
+            'new_price': new_price,
             'days_used': days_used,
             'days_remaining': days_remaining,
             'package_refund': package_refund,
-            'plan_refund': plan_refund
+            'plan_refund': plan_refund,
+            'daily_plan_rate': daily_rate,
+            'daily_package_rate': daily_package_rate,
+            'current_plan_price': self.PLANS[self.plan]['price'],
+            'package_price': self.PACKAGE_PRICE
         }
 
     def to_dict(self):

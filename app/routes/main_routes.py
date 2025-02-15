@@ -56,8 +56,11 @@ def calculate_change():
                     'refund_amount': str(result['refund_amount']),
                     'plan_refund': str(result['plan_refund']),
                     'package_refund': str(result['package_refund']),
-                    'new_plan_price': str(result['new_plan_price']),  # Base plan price
-                    'final_price': str(result['final_price'])  # Total including package if needed
+                    'new_plan_price': str(result['new_plan_price']),
+                    'final_price': str(result['final_price']),
+                    'daily_plan_rate': str(result['daily_plan_rate']),
+                    'current_plan_price': str(result['current_plan_price']),
+                    'package_price': str(result['package_price'])
                 })
             
             # Pokud jde o novou registraci

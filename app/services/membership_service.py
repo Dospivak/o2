@@ -45,6 +45,7 @@ class MembershipService:
             # Calculate prorated package price
             days_remaining = 30 - days_used
             package_price = (Member.PACKAGE_PRICE * Decimal(days_remaining) / Decimal('30'))
+            daily_rate = Member.PLANS[member.plan]['price'] / Decimal('30')
             
             return {
                 'current_plan': member.plan,
@@ -58,7 +59,10 @@ class MembershipService:
                 'package_refund': Decimal('0'),
                 'new_plan_price': Member.PLANS[new_plan]['price'],
                 'final_price': package_price,  # Only the prorated package price
-                'has_package': True
+                'has_package': True,
+                'daily_plan_rate': daily_rate,
+                'current_plan_price': Member.PLANS[member.plan]['price'],
+                'package_price': Member.PACKAGE_PRICE
             }
         
         # Regular plan change logic
@@ -96,10 +100,13 @@ class MembershipService:
             'days_remaining': result['days_remaining'],
             'refund_amount': result['refund'],
             'plan_refund': result['plan_refund'],
-            'package_refund': result['package_refund'],  # Will always be 0
+            'package_refund': result['package_refund'],
             'new_plan_price': result['new_price'],
-            'final_price': final_price - result['refund'],  # Subtract only plan refund
-            'has_package': has_package  # Add this to indicate if package applies
+            'final_price': final_price - result['refund'],
+            'has_package': has_package,
+            'daily_plan_rate': result['daily_plan_rate'],
+            'current_plan_price': result['current_plan_price'],
+            'package_price': result['package_price']
         }
 
     def add_member(self, member_id, name, plan_type, start_date, has_package=False):
