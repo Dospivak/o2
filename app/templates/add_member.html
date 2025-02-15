@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Add New Member</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label for="member_id" class="form-label">Member ID</label>
+        <input type="text" class="form-control" id="member_id" name="member_id" required>
+    </div>
+    <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="mb-3">
+        <label for="package_type" class="form-label">Package</label>
+        <select class="form-control" id="package_type" name="package_type" required>
+            {% for pkg_id, details in packages.items() %}
+            <option value="{{ pkg_id }}">{{ details.name }} - ${{ details.price }}/month</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Member</button>
+</form>
+{% endblock %} 
