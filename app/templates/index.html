@@ -146,11 +146,11 @@
             <div x-show="calculation" x-cloak class="bg-gray-50 p-4 rounded-md">
                 <h3 class="text-md font-medium text-gray-900 mb-4">Výsledek výpočtu</h3>
 
-                <template x-if="calculation.message">
+                <template x-if="calculation && calculation.message">
                     <div class="text-sm text-gray-700 mb-4" x-text="calculation.message"></div>
                 </template>
                 
-                <template x-if="!calculation.message">
+                <template x-if="calculation && !calculation.message">
                     <div class="space-y-3">
                         <div class="grid grid-cols-2 text-sm">
                             <span class="text-gray-500">Současný plán:</span>
@@ -168,22 +168,24 @@
                             <span class="text-gray-500">Zbývající dny:</span>
                             <span class="text-gray-900" x-text="calculation.days_remaining"></span>
                         </div>
-                        <template x-if="calculation.plan_refund">
+                        <template x-if="calculation.plan_refund && parseFloat(calculation.plan_refund) > 0">
                             <div class="grid grid-cols-2 text-sm">
                                 <span class="text-gray-500">Vratka za plán:</span>
                                 <span class="text-gray-900" x-text="formatPrice(calculation.plan_refund)"></span>
                             </div>
                         </template>
-                        <template x-if="calculation.package_refund">
+                        <template x-if="calculation.package_refund && parseFloat(calculation.package_refund) > 0">
                             <div class="grid grid-cols-2 text-sm">
                                 <span class="text-gray-500">Vratka za balíček:</span>
                                 <span class="text-gray-900" x-text="formatPrice(calculation.package_refund)"></span>
                             </div>
                         </template>
-                        <div class="grid grid-cols-2 text-sm">
-                            <span class="text-gray-500">Celková vratka:</span>
-                            <span class="text-gray-900" x-text="formatPrice(calculation.refund_amount)"></span>
-                        </div>
+                        <template x-if="calculation.refund_amount && parseFloat(calculation.refund_amount) > 0">
+                            <div class="grid grid-cols-2 text-sm">
+                                <span class="text-gray-500">Celková vratka:</span>
+                                <span class="text-gray-900" x-text="formatPrice(calculation.refund_amount)"></span>
+                            </div>
+                        </template>
                         <div class="grid grid-cols-2 text-sm">
                             <span class="text-gray-500">Cena nového plánu:</span>
                             <span class="text-gray-900" x-text="formatPrice(calculation.new_plan_price)"></span>
