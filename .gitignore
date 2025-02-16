@@ -7,4 +7,11 @@ __pycache__/
 venv/
 env/
 .env/
-.venv/ 
+.venv/
+
+# Deployment secrets
+.env.deploy
+github_deploy_key
+github_deploy_key.pub
+*.pem
+*.key 
