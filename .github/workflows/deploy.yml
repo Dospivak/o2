@@ -34,6 +34,6 @@ jobs:
           ssh ${{ env.SSH_USER }}@${{ env.DROPLET_IP }} '
             cd /var/www/o2 &&
             sudo -u www-data git pull origin main &&
-            sudo -u www-data /var/www/o2/venv/bin/pip install -r requirements.txt &&
-            sudo systemctl restart o2
+            chmod +x deploy_setup.sh &&
+            sudo ./deploy_setup.sh
           ' 
