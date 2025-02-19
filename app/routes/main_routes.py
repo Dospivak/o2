@@ -1,17 +1,45 @@
 from datetime import datetime
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session
 from app.services.membership_service import MembershipService
+from functools import wraps
 import uuid
 
 bp = Blueprint('main', __name__)
 membership_service = MembershipService()
 
+# Password for the application
+APP_PASSWORD = "voyo4ever"
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('authenticated'):
+            return redirect(url_for('main.login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        if request.form['password'] == APP_PASSWORD:
+            session['authenticated'] = True
+            return redirect(url_for('main.index'))
+        flash('Nesprávné heslo')
+    return render_template('login.html')
+
+@bp.route('/logout')
+def logout():
+    session.pop('authenticated', None)
+    return redirect(url_for('main.login'))
+
 @bp.route('/')
+@login_required
 def index():
     """Hlavní stránka s kalkulačkou"""
     return render_template('index.html', plans=membership_service.list_plans())
 
 @bp.route('/calculate-change', methods=['POST'])
+@login_required
 def calculate_change():
     """Endpoint pro výpočet změny plánu"""
     try:

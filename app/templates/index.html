@@ -87,7 +87,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Plán</label>
                             <select x-model="selectedPlan"
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                    class="mt-1 block w-full pl-4 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base rounded-md">
                                 <option value="">Vyberte plán</option>
                                 {% for plan_id, plan in plans.items() %}
                                 <option value="{{ plan_id }}">{{ plan.name }} ({{ plan.price }} Kč)</option>
@@ -99,7 +99,7 @@
                             <label class="block text-sm font-medium text-gray-700">Datum aktivace</label>
                             <input type="date" 
                                    x-model="startDate"
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base py-3 px-4">
                         </div>
                     </div>
                 </div>
@@ -112,7 +112,7 @@
                             <label class="block text-sm font-medium text-gray-700">Nový plán</label>
                             <select x-model="newPlan"
                                     @change="if (newPlan === 'D') wantsPackage = false"
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                    class="mt-1 block w-full pl-4 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base rounded-md">
                                 <option value="">Vyberte nový plán</option>
                                 {% for plan_id, plan in plans.items() %}
                                 <option value="{{ plan_id }}">{{ plan.name }} ({{ plan.price }} Kč){% if plan.includes_package %} - včetně balíčku{% endif %}</option>
@@ -124,7 +124,7 @@
                             <label class="block text-sm font-medium text-gray-700">Datum změny</label>
                             <input type="date" 
                                    x-model="changeDate"
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base py-3 px-4">
                         </div>
 
                         <div x-show="newPlan !== 'D'">
@@ -132,7 +132,7 @@
                             <div class="mt-1">
                                 <input type="checkbox" 
                                        x-model="wantsPackage"
-                                       class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                       class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                                 <span class="ml-2">Ano</span>
                             </div>
                         </div>

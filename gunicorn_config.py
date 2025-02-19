@@ -12,11 +12,9 @@ worker_class = 'sync'
 # Timeout for worker processes
 timeout = 120
 
-# Access log - records incoming HTTP requests
-accesslog = "/var/log/gunicorn/access.log"
-
-# Error log - records Gunicorn server goings-on
-errorlog = "/var/log/gunicorn/error.log"
+# Log to stdout/stderr
+accesslog = "-"
+errorlog = "-"
 
 # Whether to send Flask output to the error log 
 capture_output = True
