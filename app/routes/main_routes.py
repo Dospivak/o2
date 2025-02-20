@@ -8,7 +8,7 @@ bp = Blueprint('main', __name__)
 membership_service = MembershipService()
 
 # Password for the application
-APP_PASSWORD = "voyo4ever"
+APP_PASSWORD = "vokouni"
 
 def login_required(f):
     @wraps(f)
