@@ -331,31 +331,55 @@
         for (const [buttonId, dateProperty] of Object.entries(dateButtons)) {
             const button = document.getElementById(buttonId);
             if (button) {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent event bubbling
+                    
+                    // Create a container for the date picker to control positioning context
+                    const container = document.createElement('div');
+                    container.style.position = 'relative';
+                    container.style.zIndex = '9999';
+                    button.parentNode.appendChild(container);
+                    
+                    // Create date input
                     const datePicker = document.createElement('input');
                     datePicker.type = 'date';
-                    datePicker.style.position = 'fixed';
-                    datePicker.style.top = '0';
-                    datePicker.style.left = '0';
-                    datePicker.style.opacity = '0';
-                    document.body.appendChild(datePicker);
                     
+                    // Style container and position relative to button
+                    const buttonRect = button.getBoundingClientRect();
+                    container.style.position = 'absolute';
+                    container.style.top = buttonRect.height + 'px';
+                    container.style.left = '0';
+                    
+                    // Add date picker to container
+                    container.appendChild(datePicker);
+                    
+                    // Handle date selection
                     datePicker.addEventListener('change', function() {
                         const dateValue = this.value;
                         // Update Alpine.js data property
                         if (mainComponent) {
                             mainComponent[dateProperty] = dateValue;
                         }
-                        document.body.removeChild(datePicker);
+                        button.parentNode.removeChild(container);
                     });
                     
-                    // Explicitly show the browser date picker
-                    if (typeof datePicker.showPicker === 'function') {
-                        datePicker.showPicker();
-                    } else {
-                        datePicker.focus();
-                        datePicker.click();
-                    }
+                    // Handle click outside
+                    document.addEventListener('click', function clickOutside(evt) {
+                        if (!container.contains(evt.target) && evt.target !== button) {
+                            button.parentNode.removeChild(container);
+                            document.removeEventListener('click', clickOutside);
+                        }
+                    });
+                    
+                    // Show date picker
+                    setTimeout(() => {
+                        if (typeof datePicker.showPicker === 'function') {
+                            datePicker.showPicker();
+                        } else {
+                            datePicker.focus();
+                            datePicker.click();
+                        }
+                    }, 50); // Small delay to ensure DOM is ready
                 });
             }
         }
