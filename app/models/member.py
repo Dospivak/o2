@@ -3,12 +3,13 @@ from decimal import Decimal
 
 class Member:
     PLANS = {
-        'A': {'name': 'Plán A', 'price': Decimal('199'), 'includes_package': False},
-        'B': {'name': 'Plán B', 'price': Decimal('399'), 'includes_package': False},
-        'C': {'name': 'Plán C', 'price': Decimal('599'), 'includes_package': False},
-        'D': {'name': 'Plán D', 'price': Decimal('799'), 'includes_package': True}
+        'A': {'name': 'Komfort', 'price': Decimal('199'), 'includes_package': False},
+        'B': {'name': 'Extra zábava', 'price': Decimal('399'), 'includes_package': False},
+        'C': {'name': 'Extra sport', 'price': Decimal('599'), 'includes_package': False},
+        'D': {'name': 'Maximum', 'price': Decimal('799'), 'includes_package': True}
     }
     PACKAGE_PRICE = Decimal('99')
+    PACKAGE_NAME = 'Rodinné sledování'
 
     def __init__(self, member_id, name, plan_type, start_date, has_package=False):
         self.member_id = member_id
@@ -56,10 +57,10 @@ class Member:
         daily_rate = self.PLANS[self.plan]['price'] / Decimal('30')
         plan_refund = (daily_rate * Decimal(days_remaining))
 
-        # Calculate package refund only when changing to Plan D and user has a package
+        # Calculate package refund if user has a package (regardless of which plan they're switching to)
         package_refund = Decimal('0')
         daily_package_rate = Decimal('0')
-        if self.has_package and self.PLANS[new_plan]['includes_package']:
+        if self.has_package:
             daily_package_rate = self.PACKAGE_PRICE / Decimal('30')
             package_refund = (daily_package_rate * Decimal(days_remaining))
 

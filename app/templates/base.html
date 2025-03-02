@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Správa členství{% endblock %}</title>
+    <title>{% block title %}OnePlay - změny plánů{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         [x-cloak] { display: none !important; }
@@ -17,14 +17,9 @@
                 <div class="flex justify-between h-16">
                     <div class="flex">
                         <div class="flex-shrink-0 flex items-center">
-                            <span class="text-xl font-bold text-gray-800">Správa členství</span>
+                            <span class="text-xl font-bold text-gray-800">Oneplay - změny plánů</span>
                         </div>
-                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            <a href="{{ url_for('main.index') }}" 
-                               class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Domů
-                            </a>
-                        </div>
+                        <!-- Navigation links removed as there's only one page -->
                     </div>
                 </div>
             </div>
@@ -44,5 +39,7 @@
             {% block content %}{% endblock %}
         </main>
     </div>
+
+    {% block scripts %}{% endblock %}
 </body>
 </html> 

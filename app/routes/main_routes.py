@@ -88,7 +88,9 @@ def calculate_change():
                     'final_price': str(result['final_price']),
                     'daily_plan_rate': str(result['daily_plan_rate']),
                     'current_plan_price': str(result['current_plan_price']),
-                    'package_price': str(result['package_price'])
+                    'package_price': str(result['package_price']),
+                    'is_adding_package': result.get('is_adding_package', False),
+                    'prorated_package_price': str(result.get('prorated_package_price', 0))
                 })
             
             # Pokud jde o novou registraci

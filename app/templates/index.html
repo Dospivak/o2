@@ -17,6 +17,11 @@
         if (!price) return '0 Kč';
         return parseFloat(price).toFixed(2) + ' Kč';
     },
+    formatDate(dateStr) {
+        if (!dateStr) return 'Vyberte datum';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('cs-CZ');
+    },
     resetForm() {
         this.hasPackage = false;
         this.wantsPackage = false;
@@ -65,7 +70,7 @@
     }
 }">
     <div class="p-6">
-        <h2 class="text-lg font-medium text-gray-900 mb-6">Kalkulačka členství</h2>
+        <h2 class="text-lg font-medium text-gray-900 mb-6">Kalkulačka změn plánů</h2>
         
         <div class="grid grid-cols-2 gap-6">
             <!-- Levý sloupec - vstupní pole -->
@@ -75,7 +80,7 @@
                     
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Balíček pro nové zařízení (99 Kč)</label>
+                            <label class="block text-sm font-medium text-gray-700">Rodinné sledování (99 Kč)</label>
                             <div class="mt-1">
                                 <input type="checkbox" 
                                        x-model="hasPackage"
@@ -97,9 +102,13 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Datum aktivace</label>
-                            <input type="date" 
-                                   x-model="startDate"
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base py-3 px-4">
+                            <div class="relative">
+                                <button type="button"
+                                        id="start-date-button"
+                                        class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-3 px-4 text-left focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base">
+                                    <span x-text="startDate ? formatDate(startDate) : 'Vyberte datum'">Vyberte datum</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -122,13 +131,17 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Datum změny</label>
-                            <input type="date" 
-                                   x-model="changeDate"
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base py-3 px-4">
+                            <div class="relative">
+                                <button type="button"
+                                        id="change-date-button"
+                                        class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-3 px-4 text-left focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base">
+                                    <span x-text="changeDate ? formatDate(changeDate) : 'Vyberte datum'">Vyberte datum</span>
+                                </button>
+                            </div>
                         </div>
 
                         <div x-show="newPlan !== 'D'">
-                            <label class="block text-sm font-medium text-gray-700">Balíček pro nové zařízení (99 Kč)</label>
+                            <label class="block text-sm font-medium text-gray-700">Rodinné sledování (99 Kč)</label>
                             <div class="mt-1">
                                 <input type="checkbox" 
                                        x-model="wantsPackage"
@@ -182,11 +195,31 @@
                                     <span class="text-gray-500">Zbývající dny:</span>
                                     <span class="text-gray-900" x-text="calculation.days_remaining"></span>
                                 </div>
+                                <template x-if="hasPackage">
+                                    <div class="grid grid-cols-2 text-sm">
+                                        <span class="text-gray-500">Současný balíček:</span>
+                                        <span class="text-gray-900">Ano</span>
+                                    </div>
+                                </template>
                             </div>
 
-                            <template x-if="calculation.plan_refund && parseFloat(calculation.plan_refund) > 0">
+                            <template x-if="calculation.is_adding_package">
                                 <div class="space-y-2">
-                                    <div class="text-sm font-medium text-gray-900">Vratka za plán:</div>
+                                    <div class="text-sm font-medium text-gray-900">Poplatek za přidání balíčku:</div>
+                                    <div class="pl-4 space-y-1">
+                                        <div class="text-sm text-gray-600">
+                                            <span x-text="formatExactPrice(calculation.package_price)"></span> ÷ 30 = 
+                                            <span x-text="formatExactPrice(calculation.package_price / 30)"></span>/den × 
+                                            <span x-text="calculation.days_remaining"></span> dní = 
+                                            <span class="font-medium" x-text="formatExactPrice(calculation.prorated_package_price)"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <template x-if="calculation.plan_refund && parseFloat(calculation.plan_refund) > 0 && !calculation.is_adding_package">
+                                <div class="space-y-2">
+                                    <div class="text-sm font-medium text-gray-900">Sleva za plán:</div>
                                     <div class="pl-4 space-y-1">
                                         <div class="text-sm text-gray-600">
                                             <span x-text="formatExactPrice(calculation.current_plan_price)"></span> ÷ 30 = 
@@ -198,9 +231,9 @@
                                 </div>
                             </template>
 
-                            <template x-if="calculation.package_refund && parseFloat(calculation.package_refund) > 0">
+                            <template x-if="calculation.package_refund && parseFloat(calculation.package_refund) > 0 && !calculation.is_adding_package">
                                 <div class="space-y-2">
-                                    <div class="text-sm font-medium text-gray-900">Vratka za balíček:</div>
+                                    <div class="text-sm font-medium text-gray-900">Sleva za balíček:</div>
                                     <div class="pl-4 space-y-1">
                                         <div class="text-sm text-gray-600">
                                             <span x-text="formatExactPrice(calculation.package_price)"></span> ÷ 30 = 
@@ -212,9 +245,9 @@
                                 </div>
                             </template>
 
-                            <template x-if="calculation.refund_amount && parseFloat(calculation.refund_amount) > 0">
+                            <template x-if="calculation.refund_amount && parseFloat(calculation.refund_amount) > 0 && !calculation.is_adding_package">
                                 <div class="grid grid-cols-2 text-sm font-medium">
-                                    <span class="text-gray-900">Celková vratka:</span>
+                                    <span class="text-gray-900">Celková sleva:</span>
                                     <span class="text-gray-900" x-text="formatExactPrice(calculation.refund_amount)"></span>
                                 </div>
                             </template>
@@ -225,21 +258,33 @@
                             <h4 class="font-medium text-gray-900">Konečná cena</h4>
                             
                             <div class="space-y-2">
-                                <div class="grid grid-cols-2 text-sm">
-                                    <span class="text-gray-500">Cena nového plánu:</span>
-                                    <span class="text-gray-900" x-text="formatExactPrice(calculation.new_plan_price)"></span>
-                                </div>
-                                
-                                <template x-if="calculation.has_package && !newPlan.includes('D')">
+                                <!-- Only show plan price when not just adding a package -->
+                                <template x-if="!calculation.is_adding_package">
                                     <div class="grid grid-cols-2 text-sm">
-                                        <span class="text-gray-500">Cena balíčku pro nové zařízení:</span>
-                                        <span class="text-gray-900">99 Kč</span>
+                                        <span class="text-gray-500">Cena nového plánu:</span>
+                                        <span class="text-gray-900" x-text="formatExactPrice(calculation.new_plan_price)"></span>
+                                    </div>
+                                </template>
+                                
+                                <!-- Show prorated package price when adding package only -->
+                                <template x-if="calculation.is_adding_package">
+                                    <div class="grid grid-cols-2 text-sm">
+                                        <span class="text-gray-500">Poplatek za Rodinné sledování:</span>
+                                        <span class="text-gray-900" x-text="formatExactPrice(calculation.prorated_package_price)"></span>
+                                    </div>
+                                </template>
+                                
+                                <!-- Show package price when changing plans and adding package -->
+                                <template x-if="wantsPackage && !calculation.new_plan.includes('D') && !calculation.is_adding_package">
+                                    <div class="grid grid-cols-2 text-sm">
+                                        <span class="text-gray-500">Rodinné sledování:</span>
+                                        <span class="text-gray-900">+ 99.00 Kč</span>
                                     </div>
                                 </template>
 
-                                <template x-if="calculation.refund_amount && parseFloat(calculation.refund_amount) > 0">
+                                <template x-if="calculation.refund_amount && parseFloat(calculation.refund_amount) > 0 && !calculation.is_adding_package">
                                     <div class="grid grid-cols-2 text-sm">
-                                        <span class="text-gray-500">Odečtená vratka:</span>
+                                        <span class="text-gray-500">Odečtená sleva:</span>
                                         <span class="text-gray-900">- <span x-text="formatExactPrice(calculation.refund_amount)"></span></span>
                                     </div>
                                 </template>
@@ -248,6 +293,12 @@
                                     <span class="text-gray-900">Konečná cena:</span>
                                     <span class="text-indigo-600" x-text="formatPrice(calculation.final_price)"></span>
                                 </div>
+
+                                <template x-if="calculation.new_plan === 'D'">
+                                    <div class="mt-2 text-sm text-gray-500 italic">
+                                        * Maximum obsahuje Rodinné sledování v ceně
+                                    </div>
+                                </template>
                             </div>
                         </div>
                     </div>
@@ -263,4 +314,51 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateButtons = {
+            'start-date-button': 'startDate',
+            'change-date-button': 'changeDate'
+        };
+        
+        // Get the main component
+        const mainComponent = Alpine.$data(document.querySelector('[x-data]'));
+        
+        // Set up event listeners for each button
+        for (const [buttonId, dateProperty] of Object.entries(dateButtons)) {
+            const button = document.getElementById(buttonId);
+            if (button) {
+                button.addEventListener('click', function() {
+                    const datePicker = document.createElement('input');
+                    datePicker.type = 'date';
+                    datePicker.style.position = 'fixed';
+                    datePicker.style.top = '0';
+                    datePicker.style.left = '0';
+                    datePicker.style.opacity = '0';
+                    document.body.appendChild(datePicker);
+                    
+                    datePicker.addEventListener('change', function() {
+                        const dateValue = this.value;
+                        // Update Alpine.js data property
+                        if (mainComponent) {
+                            mainComponent[dateProperty] = dateValue;
+                        }
+                        document.body.removeChild(datePicker);
+                    });
+                    
+                    // Explicitly show the browser date picker
+                    if (typeof datePicker.showPicker === 'function') {
+                        datePicker.showPicker();
+                    } else {
+                        datePicker.focus();
+                        datePicker.click();
+                    }
+                });
+            }
+        }
+    });
+</script>
 {% endblock %} 
